@@ -16,11 +16,12 @@ func main() {
     }
 
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        if _, err := os.Stat("/path/to/whatever"); err == nil {
-            log.Println("-", r.URL.Path)
-            http.ServeFile(w, r, r.URL.Path[1:])
+        filepath := r.URL.Path
+        if _, err := os.Stat(filepath[1:]); err == nil {
+            log.Println("-", filepath)
+            http.ServeFile(w, r, filepath[1:])
         } else if os.IsNotExist(err) {
-            log.Println("- Not found -", r.URL.Path)
+            log.Println("- Not found -", filepath)
             http.ServeFile(w, r, notFoundPage)
         }
     })
