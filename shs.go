@@ -9,6 +9,7 @@ import (
 
 func main() {
     port := "5000"
+    indexPage := "index.html"
     notFoundPage := "404.html"
 
     if len(os.Args) > 1 {
@@ -16,10 +17,15 @@ func main() {
     }
 
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        filepath := r.URL.Path
-        if _, err := os.Stat(filepath[1:]); err == nil {
+        filepath := r.URL.Path[1:]
+
+        if len(filepath) == 0 {
+            filepath = indexPage
+        }
+
+        if _, err := os.Stat(filepath); err == nil {
             log.Println("-", filepath)
-            http.ServeFile(w, r, filepath[1:])
+            http.ServeFile(w, r, filepath)
         } else if os.IsNotExist(err) {
             log.Println("- Not found -", filepath)
             http.ServeFile(w, r, notFoundPage)
